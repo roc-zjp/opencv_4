@@ -13,13 +13,13 @@ import 'package:opencv_4/factory/utils.dart';
 class ThresholdFactory {
   static const platform = const MethodChannel('opencv_4');
 
-  static Future<Uint8List?> threshold({
-    required CVPathFrom pathFrom,
-    required String pathString,
-    required double thresholdValue,
-    required double maxThresholdValue,
-    required int thresholdType,
-  }) async {
+  static Future<Uint8List?> threshold(
+      {required CVPathFrom pathFrom,
+      required String pathString,
+      required double thresholdValue,
+      required double maxThresholdValue,
+      required int thresholdType,
+      Uint8List? imageContent = null}) async {
     File _file;
     Uint8List _fileAssets;
 
@@ -49,6 +49,17 @@ class ThresholdFactory {
         break;
       case CVPathFrom.ASSETS:
         _fileAssets = await Utils.imgAssets2Uint8List(pathString);
+        result = await platform.invokeMethod('threshold', {
+          "pathType": 3,
+          "pathString": '',
+          "data": _fileAssets,
+          'thresholdValue': thresholdValue,
+          'maxThresholdValue': maxThresholdValue,
+          'thresholdType': thresholdType
+        });
+        break;
+      case CVPathFrom.SOURCE:
+        _fileAssets = imageContent!;
         result = await platform.invokeMethod('threshold', {
           "pathType": 3,
           "pathString": '',
